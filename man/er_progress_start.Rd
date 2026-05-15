@@ -7,12 +7,13 @@
 er_progress_start(total_steps, title = "ER pipeline")
 }
 \arguments{
-\item{total_steps}{integer}
+\item{total_steps}{Integer. Total number of steps to track.}
 
-\item{title}{character}
+\item{title}{Character. Label printed at start and finish.}
 }
 \value{
-progress environment
+A named list of class \code{"er_progress"} with fields \code{pb}, \code{total},
+\code{step}, \code{title}, \code{t0}, and \code{last}.
 }
 \description{
 Progress bar (start)

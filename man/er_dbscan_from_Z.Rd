@@ -6,6 +6,16 @@
 \usage{
 er_dbscan_from_Z(Z, eps, minPts = 5)
 }
+\arguments{
+\item{Z}{Numeric matrix \eqn{n \times d} of record embeddings.}
+
+\item{eps}{Numeric. Neighbourhood radius epsilon.}
+
+\item{minPts}{Integer. Minimum points for core definition. Default \code{5}.}
+}
+\value{
+Integer vector of cluster labels; noise points receive unique singleton labels.
+}
 \description{
 DBSCAN on embeddings
 }

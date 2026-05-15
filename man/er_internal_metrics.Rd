@@ -6,6 +6,18 @@
 \usage{
 er_internal_metrics(Z, labels, G = NULL, sample_n = 2000L)
 }
+\arguments{
+\item{Z}{Numeric matrix \eqn{n \times d} of record embeddings.}
+
+\item{labels}{Integer vector of cluster labels (length \code{n}).}
+
+\item{G}{Optional igraph graph; required for modularity computation. Default \code{NULL}.}
+
+\item{sample_n}{Integer. Maximum sample size for silhouette computation. Default \code{2000}.}
+}
+\value{
+Named list with elements \code{silhouette}, \code{ch}, \code{db}, \code{modularity}.
+}
 \description{
 Internal metrics (Silhouette/CH/DB/Modularity/Stability)
 }

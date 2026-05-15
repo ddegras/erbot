@@ -6,6 +6,16 @@
 \usage{
 er_kmeans_from_Z(Z, k, nstart = 10)
 }
+\arguments{
+\item{Z}{Numeric matrix \eqn{n \times d} of record embeddings.}
+
+\item{k}{Integer. Number of clusters.}
+
+\item{nstart}{Integer. Number of random restarts. Default \code{10}.}
+}
+\value{
+Integer vector of cluster labels (length \code{n}).
+}
 \description{
 K-means on embeddings
 }

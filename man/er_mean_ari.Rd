@@ -7,7 +7,10 @@
 er_mean_ari(labels_list)
 }
 \arguments{
-\item{labels_list}{list of integer vectors (same length)}
+\item{labels_list}{List of integer vectors of equal length (one per clustering run).}
+}
+\value{
+Numeric mean pairwise ARI across all pairs of runs, or \code{NA} if fewer than 2 runs.
 }
 \description{
 Mean ARI across a list of label vectors (stability)

@@ -6,6 +6,18 @@
 \usage{
 er_autoplot_tuning(res, metric = NULL)
 }
+\arguments{
+\item{res}{List returned by \code{\link[=er_unified_pipeline]{er_unified_pipeline()}} or \code{\link[=er_main]{er_main()}},
+containing a \verb{$tuning} sub-list.}
+
+\item{metric}{Character. Metric to display for the GC panel. If \code{NULL}
+(default), auto-selected via \code{\link[=er_pick_gc_metric]{er_pick_gc_metric()}}.}
+}
+\value{
+\code{TRUE} invisibly if at least one panel was drawn; \code{FALSE} invisibly
+if no tuning data are available.
+}
 \description{
-Autoplot tuning panels
+Draws up to four base-graphics panels (k-means silhouette, HC silhouette,
+PAM silhouette, GC threshold curve) from an \code{er_unified_pipeline()} result.
 }

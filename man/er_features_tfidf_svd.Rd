@@ -7,13 +7,16 @@
 er_features_tfidf_svd(text_vec, svd_dim = 100)
 }
 \arguments{
-\item{text_vec}{character vector}
+\item{text_vec}{Character vector of strings to embed (one per record).}
 
-\item{svd_dim}{target dimension}
+\item{svd_dim}{Integer. Target number of SVD dimensions. Clipped to
+\code{min(dim(DTM)) - 1} if too large, with a minimum of 2. Default \code{100}.}
 }
 \value{
-dense numeric matrix
+Dense numeric matrix with \code{length(text_vec)} rows and up to
+\code{svd_dim} columns (rows × left singular vectors × singular values).
 }
 \description{
-TF-IDF + truncated SVD features
+Builds a TF-IDF document-term matrix from \code{text_vec} using \strong{text2vec},
+then reduces it to a dense embedding via truncated SVD (\strong{irlba}).
 }

@@ -6,6 +6,16 @@
 \usage{
 er_threshold_cc(Z, min_sim = 0.6, k_knn = 100)
 }
+\arguments{
+\item{Z}{Numeric matrix \eqn{n \times d} of record embeddings.}
+
+\item{min_sim}{Numeric. Minimum cosine similarity to retain an edge. Default \code{0.6}.}
+
+\item{k_knn}{Integer. Number of nearest neighbours for graph construction. Default \code{100}.}
+}
+\value{
+Integer vector of connected-component membership labels.
+}
 \description{
 Thresholded connected components on cosine similarity
 }

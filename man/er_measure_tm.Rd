@@ -6,8 +6,12 @@
 \usage{
 er_measure_tm(expr)
 }
+\arguments{
+\item{expr}{An R expression to evaluate.}
+}
 \value{
-list(time_sec, peak_mem_MB, result)
+Named list with \code{time_sec} (elapsed seconds), \code{peak_mem_MB}
+(peak RAM in MiB), and \code{result} (the value of \code{expr}).
 }
 \description{
 Measure time & memory of an expression

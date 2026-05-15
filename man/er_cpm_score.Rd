@@ -7,13 +7,16 @@
 er_cpm_score(g, membership, gamma = 0.05, weights = NULL)
 }
 \arguments{
-\item{g}{igraph graph}
+\item{g}{igraph graph.}
 
-\item{membership}{integer labels}
+\item{membership}{Integer vector of cluster labels.}
 
-\item{gamma}{numeric resolution parameter}
+\item{gamma}{Numeric CPM resolution parameter. Default \code{0.05}.}
 
-\item{weights}{optional numeric vector; defaults to E(g)$weight}
+\item{weights}{Optional numeric edge weight vector; defaults to \code{E(g)$weight}.}
+}
+\value{
+Numeric CPM score: \eqn{\sum_c [e_c - \gamma n_c(n_c-1)/2]}.
 }
 \description{
 CPM quality function for a partition on a graph

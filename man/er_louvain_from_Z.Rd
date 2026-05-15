@@ -6,6 +6,16 @@
 \usage{
 er_louvain_from_Z(Z, k_knn = 50, min_sim = 0)
 }
+\arguments{
+\item{Z}{Numeric matrix \eqn{n \times d} of record embeddings.}
+
+\item{k_knn}{Integer. Number of nearest neighbours for graph construction. Default \code{50}.}
+
+\item{min_sim}{Numeric. Minimum cosine similarity to retain an edge. Default \code{0.0}.}
+}
+\value{
+Integer membership vector with a \code{graph} attribute (the igraph used).
+}
 \description{
 Louvain on kNN graph
 }

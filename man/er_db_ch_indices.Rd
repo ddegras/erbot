@@ -7,9 +7,13 @@
 er_db_ch_indices(X, membership)
 }
 \arguments{
-\item{X}{numeric matrix (rows = samples)}
+\item{X}{Numeric matrix with rows = records.}
 
-\item{membership}{integer labels}
+\item{membership}{Integer vector of cluster labels (length = \code{nrow(X)}).}
+}
+\value{
+Named list with \code{db} (Davies–Bouldin; lower is better) and
+\code{ch} (Calinski–Harabasz; higher is better).
 }
 \description{
 Davies–Bouldin and Calinski–Harabasz indices

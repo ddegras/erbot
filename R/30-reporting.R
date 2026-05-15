@@ -28,7 +28,7 @@ er_plot_curve <- function(df, x_col, y_col, main="", xlab=NULL, ylab=NULL){
 #' otherwise tries `fallback_metric` and then a fixed priority list.
 #'
 #' @param gc_curve A `data.frame`/`tibble` of tuning results with one column
-#'   per metric, as returned by [er_gc_from_text()].
+#'   per metric, as returned by `er_gc_from_text()`.
 #' @param fallback_metric Character. Metric name to try if `"silhouette"` is
 #'   absent. Default `"adj_rand"`.
 #' @return A single character metric name, or `NULL` if none found.
@@ -845,7 +845,7 @@ er_write_performance <- function(x, file, digits = 5, ...) {
 #' Dataset profile PDF report
 #'
 #' Reads loaded data (from [er_load_input()] or a plain `data.frame`) and an
-#' optional diagnosis (from [er_diagnose()]) and writes a multi-page PDF
+#' optional diagnosis (from `er_diagnose()`) and writes a multi-page PDF
 #' summarising the dataset's structure and field characteristics.
 #'
 #' Pages produced:
@@ -857,7 +857,7 @@ er_write_performance <- function(x, file, digits = 5, ...) {
 #' }
 #'
 #' @param data A `data.frame` or the raw result from [er_load_input()].
-#' @param diag Optional. The list returned by [er_diagnose()].  When `NULL`
+#' @param diag Optional. The list returned by `er_diagnose()`.  When `NULL`
 #'   the function still runs but skips diagnosis-derived panels.
 #' @param output_file Character.  Path for the output PDF.  Defaults to
 #'   `"data_profile_<timestamp>.pdf"` in the current working directory.

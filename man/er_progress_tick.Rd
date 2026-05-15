@@ -7,9 +7,12 @@
 er_progress_tick(p, label = NULL)
 }
 \arguments{
-\item{p}{progress object from \link{er_progress_start}}
+\item{p}{Progress object returned by \code{\link[=er_progress_start]{er_progress_start()}}.}
 
-\item{label}{optional label}
+\item{label}{Optional character label printed beside the step counter.}
+}
+\value{
+The updated progress object (invisibly).
 }
 \description{
 Progress bar (tick)

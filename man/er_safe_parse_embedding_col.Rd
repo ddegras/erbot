@@ -7,11 +7,16 @@
 er_safe_parse_embedding_col(x)
 }
 \arguments{
-\item{x}{character/any}
+\item{x}{Character vector (or coercible to character) of serialized
+embeddings. \code{NA} values are treated as empty strings.}
 }
 \value{
-matrix (rows = records, cols = inferred dim)
+Numeric matrix with \code{length(x)} rows and inferred embedding
+dimension columns. Rows with no tokens are filled with \code{NA}.
 }
 \description{
-Parse a column of serialized embeddings to a numeric matrix
+Accepts a character vector where each element is a serialized numeric
+sequence (e.g., \code{"[0.1, 0.2, ...]"} or \code{"0.1 0.2 ..."}), extracts all
+numeric tokens via regex, and assembles them into a matrix whose column
+dimension is inferred from the most common token count.
 }

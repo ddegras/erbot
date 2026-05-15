@@ -16,8 +16,8 @@ RecordEncoder(input_dim, hidden_dim = 256, emb_dim = 64, dropout_p = 0.1)
 \item{dropout_p}{Dropout probability.}
 }
 \value{
-A torch nn_module that maps with shape \code{c([batch_size, input_dim])}
-to output of shape \code{c([batch_size, emb_dim])}.
+A torch nn_module instance configured with the requested dimensions.
+Requires package \pkg{torch}.
 }
 \description{
 This module maps record-level feature vectors to low-dimensional

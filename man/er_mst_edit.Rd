@@ -6,6 +6,14 @@
 \usage{
 er_mst_edit(text, max_dist = 3)
 }
+\arguments{
+\item{text}{Character vector of text values (one per record).}
+
+\item{max_dist}{Integer. Maximum Levenshtein distance to retain an MST edge. Default \code{3}.}
+}
+\value{
+Integer vector of connected-component membership labels.
+}
 \description{
 MST + Edit Distance threshold (single text field)
 }

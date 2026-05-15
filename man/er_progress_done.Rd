@@ -7,7 +7,10 @@
 er_progress_done(p)
 }
 \arguments{
-\item{p}{progress object}
+\item{p}{Progress object returned by \code{\link[=er_progress_start]{er_progress_start()}}.}
+}
+\value{
+\code{NULL} invisibly. Closes the text progress bar and prints elapsed time.
 }
 \description{
 Progress bar (done)

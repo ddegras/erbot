@@ -260,10 +260,19 @@ er_cluster <- function(S, method,
   if (method == "gc") {
     if (!requireNamespace("GCMER", quietly = TRUE))
       stop("Graph Coloring requires GCMER. Install: remotes::install_github('ddegras/GCMER')")
-    D <- as.matrix(1 - S); diag(D) <- 0
-    D <- pmax(0, D)
-    res <- GCMER::resolve_entities(D, thresholds = threshold, method = "rlf")
-    return(as.integer(res$ents[, 1]))
+    D <- as.matrix(1 - S)
+    D[D < 0] <- 0   # element-wise clip — preserves matrix structure (pmax would flatten)
+    diag(D) <- 0
+    # GCMER::resolve_entities expects a plain numeric vector of the lower-triangle
+    # elements (length n*(n-1)/2), not a full matrix and not a dist object.
+    res  <- GCMER::resolve_entities(D[lower.tri(D)], thresholds = threshold,
+                                    method = "rlf")
+    ents <- res$ents
+    # resolve_entities returns a plain vector (length n) when given a single
+    # threshold, and an n×k matrix when given k>1 thresholds.
+    # Normalise to matrix so [, 1] always works.
+    if (!is.matrix(ents)) ents <- matrix(ents, ncol = 1L)
+    return(as.integer(ents[, 1L]))
   }
 
   # ── Centroidal methods: derive feature matrix X if not supplied ───────────
@@ -383,17 +392,18 @@ er_cluster <- function(S, method,
 #' @return Named list of integer vectors (one per method).
 #' @export
 er_cluster_all <- function(S,
-                            methods      = "all",
-                            k            = NULL,
-                            k_grid       = c(5L, 10L, 15L, 20L, 30L, 50L),
-                            threshold    = 0.5,
-                            gc_thresholds = NULL,
-                            resolution   = 1,
-                            X            = NULL,
-                            svd_dim      = 50L,
-                            truth_vec    = NULL,
-                            tune_metric  = "adj_rand",
-                            verbose      = TRUE) {
+                            methods           = "all",
+                            k                 = NULL,
+                            k_grid            = c(5L, 10L, 15L, 20L, 30L, 50L),
+                            threshold         = 0.5,
+                            gc_thresholds     = NULL,
+                            resolution        = 1,
+                            leiden_resolutions = c(0.05, 0.1, 0.2, 0.5, 1.0),
+                            X                 = NULL,
+                            svd_dim           = 50L,
+                            truth_vec         = NULL,
+                            tune_metric       = "adj_rand",
+                            verbose           = TRUE) {
 
   all_methods <- c("hclust_avg", "hclust_ward", "pam",
                    "threshold_cc", "louvain", "leiden", "label_prop", "gc",
@@ -422,9 +432,12 @@ er_cluster_all <- function(S,
     labs <- tryCatch({
       if (m == "gc" && !is.null(gc_thresholds) && length(gc_thresholds) > 1L) {
         # Sweep GC thresholds, pick best
-        D <- as.matrix(1 - S); diag(D) <- 0; D <- pmax(0, D)
-        res_gc <- GCMER::resolve_entities(D, thresholds = gc_thresholds,
-                                           method = "rlf")
+        D <- as.matrix(1 - S)
+        D[D < 0] <- 0   # element-wise clip preserves matrix structure
+        diag(D) <- 0
+        res_gc <- GCMER::resolve_entities(D[lower.tri(D)],
+                                          thresholds = gc_thresholds,
+                                          method = "rlf")
         ents <- as.matrix(res_gc$ents)
         if (!is.null(truth_vec)) {
           aris <- vapply(seq_len(ncol(ents)), function(j) {
@@ -441,6 +454,63 @@ er_cluster_all <- function(S,
             numeric(1L))
           sils[!is.finite(sils)] <- -Inf
           as.integer(ents[, which.max(sils)])
+        }
+      } else if (m == "leiden" &&
+                 !is.null(leiden_resolutions) &&
+                 length(leiden_resolutions) > 1L) {
+        # Sweep Leiden resolution parameter and pick the best partition.
+        # Default resolution=1 produces near-singleton splits in ER tasks;
+        # lower values (0.05–0.5) yield coarser, more useful clusters.
+        E <- Matrix::summary(S)
+        E <- E[E$i < E$j & is.finite(E$x) & E$x > 0, , drop = FALSE]
+        if (!nrow(E)) {
+          rep(1L, n)
+        } else {
+          g <- igraph::graph_from_data_frame(
+            E[, c("i", "j")], directed = FALSE,
+            vertices = data.frame(name = seq_len(n)))
+          igraph::E(g)$weight <- E$x
+          # Build a distance object for silhouette scoring.
+          # Force symmetry, clip negatives, extract lower triangle as plain vector.
+          Sm     <- as.matrix(S); Sm <- (Sm + t(Sm)) / 2
+          Dm     <- 1 - Sm; Dm[Dm < 0] <- 0; diag(Dm) <- 0
+          D_dist <- stats::as.dist(Dm)
+
+          best_labs  <- NULL
+          best_score <- -Inf
+          best_res   <- leiden_resolutions[1L]
+          for (res_i in leiden_resolutions) {
+            cl_i <- tryCatch(
+              igraph::cluster_leiden(g, weights = igraph::E(g)$weight,
+                                     resolution_parameter = res_i),
+              error = function(e)
+                igraph::cluster_louvain(g, weights = igraph::E(g)$weight)
+            )
+            memb_i <- rep(NA_integer_, n)
+            memb_i[as.integer(igraph::V(g)$name)] <-
+              as.integer(igraph::membership(cl_i))
+            memb_i[is.na(memb_i)] <-
+              max(memb_i, na.rm = TRUE) +
+              seq_len(sum(is.na(memb_i)))
+
+            score_i <- if (!is.null(truth_vec)) {
+              tryCatch(
+                GCMER::adj_rand(memb_i, truth_vec),
+                error = function(e) er_silhouette_avg(memb_i, D_dist)
+              )
+            } else {
+              er_silhouette_avg(memb_i, D_dist)
+            }
+            if (is.finite(score_i) && score_i > best_score) {
+              best_score <- score_i
+              best_labs  <- memb_i
+              best_res   <- res_i
+            }
+          }
+          if (verbose)
+            message("  leiden best resolution=", best_res,
+                    "  score=", round(best_score, 4))
+          if (is.null(best_labs)) rep(1L, n) else best_labs
         }
       } else {
         thr <- if (m == "gc") threshold else threshold

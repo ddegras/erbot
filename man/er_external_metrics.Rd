@@ -6,6 +6,17 @@
 \usage{
 er_external_metrics(labels, truth_pairs = NULL, truth_vec = NULL)
 }
+\arguments{
+\item{labels}{Integer vector of predicted cluster labels.}
+
+\item{truth_pairs}{Optional data frame with columns \code{i}, \code{j}, \code{label}
+(1 = match, 0 = non-match) for pairwise F1.}
+
+\item{truth_vec}{Optional integer vector of ground-truth entity labels for ARI.}
+}
+\value{
+Named list with \code{ari} and \code{pairwise_f1}.
+}
 \description{
 External metrics (ARI, pairwise F1)
 }

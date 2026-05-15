@@ -6,6 +6,14 @@
 \usage{
 er_agglomerative_cosine(Z, k)
 }
+\arguments{
+\item{Z}{Numeric matrix \eqn{n \times d} of record embeddings.}
+
+\item{k}{Integer. Number of clusters.}
+}
+\value{
+Integer vector of cluster labels (length \code{n}).
+}
 \description{
 Agglomerative (average linkage) on cosine distance
 }

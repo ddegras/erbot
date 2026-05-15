@@ -6,6 +6,14 @@
 \usage{
 er_params_df(res)
 }
+\arguments{
+\item{res}{List returned by \code{\link[=er_unified_pipeline]{er_unified_pipeline()}} or \code{\link[=er_main]{er_main()}}.}
+}
+\value{
+A \code{data.frame} with columns \code{Parameter} and \code{Value} (character).
+}
 \description{
-Parameters table for a pipeline result
+Extracts tuning-selected and user-supplied parameters from an
+\code{\link[=er_unified_pipeline]{er_unified_pipeline()}} result and formats them as a two-column
+\code{data.frame} suitable for printing or inclusion in a PDF report.
 }

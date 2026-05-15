@@ -156,26 +156,35 @@ er_weights <- function(sim_list, pairs = NULL, truth = NULL, id_vec = NULL,
     w <- vapply(sim_list, function(sv) {
       v <- sv[!is.na(sv)]
       if (length(v) < 10L) return(0)
-      v <- pmax(0, pmin(1, v))
+      # Clamp strictly away from {0,1}: dbeta() returns Inf at boundaries
+      # with small shape parameters, which propagates NaN into r_m.
+      v <- pmax(1e-4, pmin(1 - 1e-4, v))
       # Simple 2-component EM: initialise by splitting at median
-      med  <- stats::median(v)
-      # m = mean of upper component; u = mean of lower component
+      med   <- stats::median(v)
       upper <- v[v >= med]; lower <- v[v < med]
-      m_k <- if (length(upper)) mean(upper) else 0.9
-      u_k <- if (length(lower)) mean(lower) else 0.1
-      pi_m <- 0.1   # prior for match component (usually small fraction)
+      m_k   <- if (length(upper)) mean(upper) else 0.9
+      u_k   <- if (length(lower)) mean(lower) else 0.1
+      pi_m  <- 0.1   # prior for match component (usually small fraction)
       # 5 EM iterations
       for (iter in seq_len(5L)) {
         # E-step: posterior probability of match component
-        dm <- stats::dbeta(v, shape1 = max(0.1, m_k * 9), shape2 = max(0.1, (1 - m_k) * 9))
-        du <- stats::dbeta(v, shape1 = max(0.1, u_k * 9), shape2 = max(0.1, (1 - u_k) * 9))
-        denom  <- pi_m * dm + (1 - pi_m) * du
-        denom[denom == 0] <- 1e-300
-        r_m    <- pi_m * dm / denom
+        dm <- stats::dbeta(v, shape1 = max(0.1, m_k * 9),
+                              shape2 = max(0.1, (1 - m_k) * 9))
+        du <- stats::dbeta(v, shape1 = max(0.1, u_k * 9),
+                              shape2 = max(0.1, (1 - u_k) * 9))
+        # Guard against Inf/NaN from extreme Beta densities
+        dm[!is.finite(dm)] <- 0
+        du[!is.finite(du)] <- 0
+        denom <- pi_m * dm + (1 - pi_m) * du
+        denom[denom <= 0] <- 1e-300
+        r_m <- pi_m * dm / denom
+        r_m[!is.finite(r_m)] <- 0.5   # fallback for any remaining NaN
         # M-step
-        pi_m   <- mean(r_m)
-        m_k    <- sum(r_m * v) / max(sum(r_m), 1e-10)
-        u_k    <- sum((1 - r_m) * v) / max(sum(1 - r_m), 1e-10)
+        pi_m <- mean(r_m, na.rm = TRUE)
+        pi_m <- pmax(1e-4, pmin(1 - 1e-4, pi_m))
+        m_k  <- sum(r_m * v, na.rm = TRUE) / max(sum(r_m, na.rm = TRUE), 1e-10)
+        u_k  <- sum((1 - r_m) * v, na.rm = TRUE) /
+                max(sum(1 - r_m, na.rm = TRUE), 1e-10)
       }
       m_k <- pmax(0.01, pmin(0.99, m_k))
       u_k <- pmax(0.01, pmin(0.99, u_k))
@@ -235,6 +244,7 @@ er_weights <- function(sim_list, pairs = NULL, truth = NULL, id_vec = NULL,
 
     w <- vapply(sim_list, .ari_of_field, numeric(1L))
     w <- pmax(0, w)
+    names(w) <- fnames   # pmax() drops names; restore before passing to er_combine
     s <- sum(w)
     if (s <= 0) return(setNames(rep(1 / K, K), fnames))
     return(w / s)

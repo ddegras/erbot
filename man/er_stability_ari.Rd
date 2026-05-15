@@ -6,6 +6,21 @@
 \usage{
 er_stability_ari(Z, B = 10L, frac = 0.8, fit_fun, ...)
 }
+\arguments{
+\item{Z}{Numeric matrix \eqn{n \times d} of record embeddings.}
+
+\item{B}{Integer. Number of bootstrap replicates. Default \code{10}.}
+
+\item{frac}{Numeric. Fraction of records per bootstrap subsample. Default \code{0.8}.}
+
+\item{fit_fun}{Function. Clustering function with signature \code{function(Z, ...)}
+returning an integer label vector.}
+
+\item{...}{Additional arguments passed to \code{fit_fun}.}
+}
+\value{
+Numeric mean ARI across bootstrap pairs, or \code{NA} if \code{mclust} unavailable.
+}
 \description{
 Stability via bootstrap ARI
 }

@@ -13,9 +13,19 @@ er_leiden_from_Z(
 )
 }
 \arguments{
-\item{resolution_parameter}{numeric; higher -> more clusters}
+\item{Z}{Numeric matrix \eqn{n \times d} of record embeddings.}
 
-\item{partition_type}{"ModularityVertexPartition" or "CPMVertexPartition"}
+\item{k_knn}{Integer. Number of nearest neighbours. Default \code{50}.}
+
+\item{min_sim}{Numeric. Minimum cosine similarity edge threshold. Default \code{0.1}.}
+
+\item{resolution_parameter}{Numeric. Higher values produce more, smaller communities. Default \code{0.5}.}
+
+\item{partition_type}{Character. One of \code{"ModularityVertexPartition"} or
+\code{"CPMVertexPartition"}. Default \code{"ModularityVertexPartition"}.}
+}
+\value{
+Integer membership vector with a \code{graph} attribute (the igraph used).
 }
 \description{
 Leiden on kNN graph (via leidenbase)

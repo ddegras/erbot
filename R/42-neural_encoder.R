@@ -7,12 +7,21 @@
 #' @param hidden_dim Hidden layer size.
 #' @param emb_dim Embedding dimension.
 #' @param dropout_p Dropout probability.
-#' @return A torch nn_module generator. Call it with \code{input_dim} (and
-#'   optionally \code{hidden_dim}, \code{emb_dim}, \code{dropout_p}) to create
-#'   an encoder instance. Requires package \pkg{torch}.
+#' @return A torch nn_module instance configured with the requested dimensions.
+#'   Requires package \pkg{torch}.
 #' @export
-if (requireNamespace("torch", quietly = TRUE)) {
-  RecordEncoder <- torch::nn_module(
+RecordEncoder <- function(input_dim,
+                          hidden_dim = 256,
+                          emb_dim    = 64,
+                          dropout_p  = 0.1) {
+  if (!requireNamespace("torch", quietly = TRUE)) {
+    stop(
+      "Package 'torch' is required for RecordEncoder. ",
+      "Install with: install.packages('torch')"
+    )
+  }
+
+  encoder_module <- torch::nn_module(
     "RecordEncoder",
 
     initialize = function(input_dim,
@@ -36,13 +45,13 @@ if (requireNamespace("torch", quietly = TRUE)) {
       z / z_norm
     }
   )
-} else {
-  RecordEncoder <- function(...) {
-    stop(
-      "Package 'torch' is required for RecordEncoder. ",
-      "Install with: install.packages('torch')"
-    )
-  }
+
+  encoder_module(
+    input_dim  = input_dim,
+    hidden_dim = hidden_dim,
+    emb_dim    = emb_dim,
+    dropout_p  = dropout_p
+  )
 }
 
 #' Simple contrastive loss for ER embeddings

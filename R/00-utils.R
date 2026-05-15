@@ -6,15 +6,10 @@
 
 #' erbot: A Unified Entity Resolution Pipeline
 #'
-#' @description
 #' End-to-end entity resolution (deduplication and record linkage) for tabular
 #' data. One call to \code{\link{er_run}()} runs the full nine-stage pipeline:
 #' loading, diagnosis, blocking, per-field similarity, NA-aware combination,
 #' clustering, merging, evaluation, and reporting.
-#'
-#' @docType package
-#' @name erbot-package
-#' @aliases erbot
 #'
 #' @importFrom magrittr %>%
 #' @importFrom dplyr bind_rows bind_cols transmute filter mutate distinct
@@ -38,7 +33,8 @@
 #' @importFrom tools file_ext
 #' @importFrom utils head tail
 #' @importFrom methods is
-NULL
+#' @keywords internal
+"_PACKAGE"
 
 # ── Null-coalescing ────────────────────────────────────────────────────────────
 

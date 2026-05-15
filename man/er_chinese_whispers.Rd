@@ -6,6 +6,14 @@
 \usage{
 er_chinese_whispers(g, iters = 20)
 }
+\arguments{
+\item{g}{An igraph object with edge \code{weight} attributes.}
+
+\item{iters}{Integer. Number of propagation iterations. Default \code{20}.}
+}
+\value{
+Integer vector of cluster labels (length = number of vertices).
+}
 \description{
 Chinese Whispers (label propagation)
 }
